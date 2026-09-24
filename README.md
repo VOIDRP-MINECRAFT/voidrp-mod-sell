@@ -1,13 +1,17 @@
-# 🪙 VoidRP Mod Sell
+<p align="center"><img src=".github/assets/banner.jpg" alt="VoidRP Mod Sell" width="100%"></p>
 
-> Paper-плагин VoidRP: продажа предметов из модов прямо из инвентаря по рыночной цене — для того, чего нет
-> в магазине. Продажи засчитываются в ежедневные квесты.
+<div align="center">
 
 ![Paper](https://img.shields.io/badge/Paper%20%2F%20Mohist-1.21.1-00AF54)
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![Vault](https://img.shields.io/badge/depends-Vault-yellow)
 [![Build](https://github.com/VOIDRP-MINECRAFT/voidrp-mod-sell/actions/workflows/build.yml/badge.svg)](https://github.com/VOIDRP-MINECRAFT/voidrp-mod-sell/actions/workflows/build.yml)
 ![License](https://img.shields.io/badge/license-proprietary-red)
+
+</div>
+
+> Paper-плагин VoidRP: продажа предметов из модов прямо из инвентаря по рыночной цене — для того, чего нет
+> в магазине. Продажи засчитываются в ежедневные квесты.
 
 ---
 
