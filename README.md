@@ -1,90 +1,66 @@
 # 🪙 VoidRP Mod Sell
 
-> Paper 1.21.1 плагин — продажа предметов из модов через команды с интеграцией в квестовую систему.
+> Paper-плагин VoidRP: продажа предметов из модов прямо из инвентаря по рыночной цене — для того, чего нет
+> в магазине. Продажи засчитываются в ежедневные квесты.
 
-![Paper](https://img.shields.io/badge/Paper-1.21.1-00AF54)
+![Paper](https://img.shields.io/badge/Paper%20%2F%20Mohist-1.21.1-00AF54)
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)
 ![Vault](https://img.shields.io/badge/depends-Vault-yellow)
+[![Build](https://github.com/VOIDRP-MINECRAFT/voidrp-mod-sell/actions/workflows/build.yml/badge.svg)](https://github.com/VOIDRP-MINECRAFT/voidrp-mod-sell/actions/workflows/build.yml)
 ![License](https://img.shields.io/badge/license-proprietary-red)
 
 ---
 
-## 🗺️ Место в экосистеме
+## 🗺️ Как это работает
 
-```
-  Игрок: /modsell hand  (держит предмет из мода)
-        │
-  voidrp-mod-sell
-        │ Vault API (начислить деньги)
-        │ ModSellEvent
-        ▼
-  voidrp-daily-quests (засчитать прогресс квеста "продай X предметов")
+```mermaid
+flowchart LR
+    P["🧍 /modsell · /msellall"] --> ID["id предмета<br/>namespace:item"]
+    ID --> PS{"Цена"}
+    PS -- "есть в рынке gamesync" --> DYN["💹 динамическая цена<br/>EconomyMarketCache"]
+    PS -- "иначе" --> CFG["базовая цена<br/>config.yml"]
+    DYN & CFG --> SELL["убрать предметы,<br/>начислить деньги (Vault)"]
+    SELL --> EV["PlayerModSellEvent"]
+    EV --> DQ["📜 voidrp-daily-quests<br/>прогресс квестов"]
 ```
 
-Дополняет магазин (ESGUI + gamesync-plugin): если предмет не в магазине, игрок может продать его напрямую через команду.
+Цена сначала берётся из динамического рынка `voidrp-gamesync-plugin` (без жёсткой зависимости — через отражение),
+а если предмета там нет — из `config.yml`. Предмет без цены продать нельзя.
 
 ---
 
-## ✨ Возможности
+## ⌨️ Команды
 
-- **Продажа в руке** — `/modsell hand [количество]`
-- **Продажа всего стека** — `/modsell all <namespace:item>`
-- **Настраиваемые цены** — прайс-лист в конфиге
-- **Квестовая интеграция** — `ModSellEvent` для плагина квестов
-- **Лимиты продаж** — максимум предметов в сутки на игрока
-- **Cooldown** — интервал между продажами (антиспам)
-
----
-
-## 📋 Требования
-
-| Компонент | Версия |
+| Команда | Что делает |
 |---|---|
-| Paper / Mohist | 1.21.1 |
-| Java | 21 |
-| Vault | обязательно |
-
----
-
-## 🚀 Сборка и установка
-
-```bash
-cd voidrp_mod_sell
-./gradlew shadowJar
-# → build/libs/voidrp-mod-sell-*.jar
-```
-
-1. Скопировать jar в `plugins/`
-2. Перезапустить сервер
-3. Заполнить `plugins/VoidRpModSell/items.yml`
+| `/modsell [кол-во \| all]` (`/мпродать`) | Продать предмет из руки: без аргумента — стек в руке, число — столько штук, `all` — все такие предметы в инвентаре |
+| `/msellall` (`/мпродатьвсё`) | Продать все подходящие предметы из инвентаря |
+| `/msellinfo` (`/мценник`) | Узнать цену предмета в руке |
+| `/msellreload` | Перечитать конфиг (`voidrp.modsell.admin`) |
 
 ---
 
 ## ⚙️ Конфигурация
 
-```yaml
-# items.yml
-items:
-  "create:andesite_alloy":
-    price: 500
-    daily_limit: 1000
-  "thermal:rf_coil":
-    price: 2500
-    daily_limit: 200
+`plugins/VoidRpModSell/config.yml` — 67 предметов из Create, Mekanism, AE2, Immersive Engineering,
+Industrial Foregoing и Draconic Evolution:
 
-cooldown_seconds: 5
+```yaml
+items:
+  create:brass_ingot:              { price: 152,  name: "Слиток латуни" }
+  mekanism:ingot_osmium:           { price: 152,  name: "Слиток осмия" }
+  ae2:engineering_processor:       { price: 3000, name: "Инженерный процессор" }
 ```
 
 ---
 
-## 🛠️ Команды
+## 🚀 Сборка
 
-| Команда | Описание |
-|---|---|
-| `/modsell hand` | Продать предмет в руке |
-| `/modsell hand <кол-во>` | Продать N предметов в руке |
-| `/modsell all` | Продать все подходящие предметы |
-| `/modsell prices` | Список цен |
+```bash
+./gradlew build
+```
+
+Требования: Paper/Mohist 1.21.1, Java 21, Vault (обязательно), VoidRpGameSync (по желанию — динамические цены).
 
 ---
 
@@ -92,8 +68,8 @@ cooldown_seconds: 5
 
 | Репо | Связь |
 |---|---|
-| [voidrp-daily-quests](https://github.com/VOIDRP-MINECRAFT/voidrp-daily-quests) | Квесты на продажу предметов |
-| [voidrp-gamesync-plugin](https://github.com/VOIDRP-MINECRAFT/voidrp-gamesync-plugin) | Основной магазин модовых предметов |
+| [voidrp-gamesync-plugin](https://github.com/VOIDRP-MINECRAFT/voidrp-gamesync-plugin) | Динамические цены (`EconomyMarketCache`) |
+| [voidrp-daily-quests](https://github.com/VOIDRP-MINECRAFT/voidrp-daily-quests) | Слушает `PlayerModSellEvent` |
 
 ---
 
